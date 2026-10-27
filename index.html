@@ -1,0 +1,12 @@
+<!doctype html><html lang="bn"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>Sara</title>
+<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#070b18;color:#e8ecf8;font-family:system-ui,sans-serif;text-align:center;padding:20px}
+.o{width:90px;height:90px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#5fb3a8 30%,#6a9fd8 65%,#2a3a7a);animation:b 3s ease-in-out infinite;margin-bottom:18px}
+@keyframes b{50%{transform:scale(1.1)}}h1{font-weight:200;letter-spacing:10px;margin:0}p{opacity:.7}</style></head><body>
+<div class="o"></div><h1>SARA</h1><p id="m">সংযোগ হচ্ছে...</p>
+<script>
+fetch('link.txt?'+Date.now()).then(r=>r.text()).then(t=>{t=t.trim();
+ if(/^https:\/\/[a-z0-9-]+\.trycloudflare\.com\/?$/.test(t)){location.replace(t)}
+ else{document.getElementById('m').textContent='Sara এখন বন্ধ আছে, পরে চেষ্টা করো।'}
+}).catch(function(){document.getElementById('m').textContent='Sara এখন বন্ধ আছে, পরে চেষ্টা করো।'});
+</script></body></html>
