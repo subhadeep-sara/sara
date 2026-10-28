@@ -1,23 +1,33 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1"><title>Sara</title>
-<link rel="icon" href="icon192.png"><link rel="apple-touch-icon" href="icon192.png">
-<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#05070f">
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#05070f"><title>Sara Guest Portal</title>
 <style>
-html,body{margin:0;height:100%;background:#05070f;color:#e6ecff;font-family:system-ui,sans-serif}
-#msg{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px}
-#msg img{width:84px;height:84px;border-radius:50%;box-shadow:0 0 26px rgba(91,140,255,.7)}
-h1{font-weight:300;letter-spacing:10px;margin:16px 0 4px;padding-left:10px}
-p{opacity:.7;max-width:300px;line-height:1.5}
-</style></head><body>
-<div id="msg"><img src="icon192.png" alt=""><h1>SARA</h1><p id="t">Connecting...</p></div>
-<script>
-function ok(u){return /^https:\/\/[a-z0-9-]+\.trycloudflare\.com\/?$/.test(u)}
-function off(){document.getElementById("t").textContent="Sara is resting right now. This page will reconnect by itself, please keep it open or come back soon."}
-function go(){
- fetch("link.txt?"+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(u){
-  u=u.trim();if(!ok(u)){off();return}
-  fetch(u,{mode:"no-cors",cache:"no-store"}).then(function(){location.replace(u)}).catch(off)
- }).catch(off)
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:#05070f;color:#e6ecff;font-family:system-ui,sans-serif}
+main{width:min(100%,420px);padding:28px;border:1px solid #25365a;border-radius:24px;background:#0d1326;text-align:center}
+h1{letter-spacing:8px;font-weight:300}p{line-height:1.6;color:#aab8dd}
+a{overflow-wrap:anywhere;color:#8daeff}
+button{display:block;width:100%;margin:20px 0;padding:14px;border:0;border-radius:12px;background:linear-gradient(135deg,#3df5c8,#5b8cff);color:#04101c;font-size:16px;font-weight:700}
+#status{font-size:13px}
+</style></head><body><main>
+<h1>SARA</h1><p>Guest Portal</p>
+<p id="status">Checking the latest Guest link...</p>
+<a id="current" hidden target="_blank" rel="noopener"><button type="button">OPEN SARA</button></a>
+<p>If Sara is unavailable, the phone's Guest server or tunnel may be offline. Try again in a moment.</p>
+</main><script>
+function valid(u){return /^https:\/\/[a-z0-9-]+\.trycloudflare\.com\/?$/.test(u)}
+async function refresh(){
+ try{
+  var r=await fetch('link.txt?'+Date.now(),{cache:'no-store'});
+  if(!r.ok)throw Error('link unavailable');
+  var u=(await r.text()).trim();
+  if(!valid(u))throw Error('invalid link');
+  var a=document.getElementById('current');
+  a.href=u;a.hidden=false;
+  document.getElementById('status').textContent='Latest Guest link is ready. Tap OPEN SARA.';
+ }catch(e){
+  document.getElementById('status').textContent='No current link found. Please try again shortly.';
+ }
 }
-go();setInterval(go,15000);
+refresh();setInterval(refresh,15000);
 </script></body></html>
