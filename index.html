@@ -1,12 +1,35 @@
-<!doctype html><html lang="bn"><head><meta charset="utf-8">
+<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><title>Sara</title>
-<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#070b18;color:#e8ecf8;font-family:system-ui,sans-serif;text-align:center;padding:20px}
-.o{width:90px;height:90px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#5fb3a8 30%,#6a9fd8 65%,#2a3a7a);animation:b 3s ease-in-out infinite;margin-bottom:18px}
-@keyframes b{50%{transform:scale(1.1)}}h1{font-weight:200;letter-spacing:10px;margin:0}p{opacity:.7}</style></head><body>
-<div class="o"></div><h1>SARA</h1><p id="m">সংযোগ হচ্ছে...</p>
+<link rel="icon" href="icon192.png"><link rel="apple-touch-icon" href="icon192.png">
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#05070f">
+<style>
+html,body{margin:0;height:100%;background:#05070f;color:#e6ecff;font-family:system-ui,sans-serif}
+#msg{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:24px}
+#msg img{width:84px;height:84px;border-radius:50%;box-shadow:0 0 26px rgba(91,140,255,.7);animation:p 3s ease-in-out infinite}
+@keyframes p{50%{box-shadow:0 0 44px rgba(61,245,200,.95)}}
+h1{font-weight:300;letter-spacing:10px;margin:16px 0 4px;padding-left:10px}
+p{opacity:.7;max-width:300px;line-height:1.5}
+#fr{position:fixed;inset:0;width:100%;height:100%;border:0;display:none;background:#05070f}
+</style></head><body>
+<div id="msg"><img src="icon192.png" alt=""><h1>SARA</h1><p id="t">Connecting...</p></div>
+<iframe id="fr" allow="microphone; camera; clipboard-write"></iframe>
 <script>
-fetch('link.txt?'+Date.now()).then(r=>r.text()).then(t=>{t=t.trim();
- if(/^https:\/\/[a-z0-9-]+\.trycloudflare\.com\/?$/.test(t)){location.replace(t)}
- else{document.getElementById('m').textContent='Sara এখন বন্ধ আছে, পরে চেষ্টা করো।'}
-}).catch(function(){document.getElementById('m').textContent='Sara এখন বন্ধ আছে, পরে চেষ্টা করো।'});
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");
+var cur="";
+function ok(u){return /^https:\/\/[a-z0-9-]+\.trycloudflare\.com\/?$/.test(u)}
+function go(){
+ fetch("link.txt?"+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(u){
+  u=u.trim();
+  if(!ok(u)){off();return}
+  fetch(u,{mode:"no-cors",cache:"no-store"}).then(function(){
+   if(u!==cur){cur=u;document.getElementById("fr").src=u}
+   document.getElementById("fr").style.display="block";document.getElementById("msg").style.display="none"
+  }).catch(off)
+ }).catch(off)
+}
+function off(){
+ cur="";document.getElementById("fr").style.display="none";document.getElementById("msg").style.display="flex";
+ document.getElementById("t").textContent="Sara is resting right now. This page will reconnect by itself, please keep it open or come back soon."
+}
+go();setInterval(function(){if(document.getElementById("fr").style.display!=="block")go()},15000);
 </script></body></html>
