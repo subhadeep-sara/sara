@@ -1,20 +1,29 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#05070f"><title>Sara Guest Portal</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#05070f"><title>Sara</title>
+<link rel="manifest" href="manifest.json"><link rel="icon" href="logo.jpg"><link rel="apple-touch-icon" href="icon192.png">
 <style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;background:#05070f;color:#e6ecff;font-family:system-ui,sans-serif}
-main{width:min(100%,420px);padding:28px;border:1px solid #25365a;border-radius:24px;background:#0d1326;text-align:center}
-h1{letter-spacing:8px;font-weight:300}p{line-height:1.6;color:#aab8dd}
-a{overflow-wrap:anywhere;color:#8daeff}
-button{display:block;width:100%;margin:20px 0;padding:14px;border:0;border-radius:12px;background:linear-gradient(135deg,#3df5c8,#5b8cff);color:#04101c;font-size:16px;font-weight:700}
-#status{font-size:13px}
-</style></head><body><main>
-<h1>SARA</h1><p>Guest Portal</p>
-<p id="status">Checking the latest Guest link...</p>
-<a id="current" hidden target="_blank" rel="noopener"><button type="button">OPEN SARA</button></a>
-<p>If Sara is unavailable, the phone's Guest server or tunnel may be offline. Try again in a moment.</p>
-</main><script>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:#05070f;color:#e6ecff;font-family:system-ui,sans-serif}
+#fr{position:fixed;inset:0;width:100%;height:100%;border:0;display:none;background:#05070f}
+#wait{position:fixed;inset:0;display:grid;place-items:center;padding:24px;text-align:center}
+.card{width:min(100%,420px);padding:28px;border:1px solid #25365a;border-radius:24px;background:#0d1326}
+.card img{width:72px;height:72px;border-radius:50%}
+h1{letter-spacing:8px;font-weight:300;margin:12px 0 0;padding-left:8px}
+p{line-height:1.6;color:#aab8dd;font-size:14px}
+button{display:block;width:100%;margin:16px 0 4px;padding:14px;border:0;border-radius:12px;background:linear-gradient(135deg,#3df5c8,#5b8cff);color:#04101c;font-size:16px;font-weight:700}
+a{color:#8daeff;font-size:13px}
+</style></head><body>
+<iframe id="fr" allow="camera; microphone; autoplay; clipboard-write; fullscreen"></iframe>
+<div id="wait"><div class="card">
+<img src="logo.jpg" alt=""><h1>SARA</h1>
+<p id="st">Connecting to Sara...</p>
+<button id="rt" type="button">Retry</button>
+<p><a id="ob" hidden target="_blank" rel="noopener">Open in browser</a></p>
+</div></div>
+<script>
+var $=function(i){return document.getElementById(i)},CUR='';
 function valid(u){return /^https:\/\/[a-z0-9-]+\.trycloudflare\.com\/?$/.test(u)}
 async function refresh(){
  try{
@@ -22,12 +31,14 @@ async function refresh(){
   if(!r.ok)throw Error('link unavailable');
   var u=(await r.text()).trim();
   if(!valid(u))throw Error('invalid link');
-  var a=document.getElementById('current');
-  a.href=u;a.hidden=false;
-  document.getElementById('status').textContent='Latest Guest link is ready. Tap OPEN SARA.';
+  $('ob').href=u;$('ob').hidden=false;
+  if(u!==CUR){CUR=u;$('fr').src=u}
+  $('wait').style.display='none';$('fr').style.display='block';
  }catch(e){
-  document.getElementById('status').textContent='No current link found. Please try again shortly.';
+  if(!CUR){$('wait').style.display='grid';$('st').textContent='No current link found. Sara may be offline. Try again shortly.'}
  }
 }
+$('rt').onclick=function(){$('st').textContent='Connecting to Sara...';CUR='';$('fr').removeAttribute('src');refresh()};
+if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sw.js')}catch(e){}}
 refresh();setInterval(refresh,15000);
 </script></body></html>
